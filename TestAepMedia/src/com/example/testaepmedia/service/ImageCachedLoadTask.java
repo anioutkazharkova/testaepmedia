@@ -5,23 +5,22 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import com.example.testaepmedia.database.DatabaseHelper;
 
+//Task to get cached image 
 public class ImageCachedLoadTask extends AsyncTask<Integer,Integer, Bitmap> {
 
 	private Context mContext;
-	private ImageView image;
+	private ImageView image;	//imageview
 	private DatabaseHelper dbHelper;
 	
 	private int index=-1;
 	
 	public ImageCachedLoadTask() {
-		// TODO Auto-generated constructor stub
+		
 	}
 public	ImageCachedLoadTask(Context context,ImageView view){
 	mContext=context;
@@ -30,10 +29,11 @@ public	ImageCachedLoadTask(Context context,ImageView view){
 }
 	@Override
 	protected Bitmap doInBackground(Integer... params) {
-		// TODO Auto-generated method stub
+		
 		if (params!=null && params.length>0)
 		{
 			index=params[0];
+			//Get cached bitmap
 			return getCachedBitmap(index);
 			
 		}
@@ -41,12 +41,13 @@ public	ImageCachedLoadTask(Context context,ImageView view){
 	}
 	@Override
 	protected void onPostExecute(Bitmap result) {
-		// TODO Auto-generated method stub
+		
 		if (result!=null)
 		{
 			if (image!=null)
 			{
 				try{
+				//Set image to imageview
 				image.setImageBitmap(result);	
 				}
 				catch(OutOfMemoryError e)
@@ -61,15 +62,21 @@ public	ImageCachedLoadTask(Context context,ImageView view){
 		}
 		dbHelper.close();
 	}
+	
+	//Retrieving cached image data
 	private Bitmap getCachedBitmap(int index)
 	{
+		//Opening database to read
 		SQLiteDatabase db=dbHelper.getReadableDatabase();
+		//Selecting row for specified row id
 		Cursor cursor=db.rawQuery("select * from image_entity where id = ?", new String[]{index+""});
 		if (cursor!=null && cursor.getCount()>0)
 		{
 			cursor.moveToFirst();
+			//Getting image path
 			String path =cursor.getString(cursor.getColumnIndex("url"));
 			try{
+			//Creating bitmap for current file
 			return BitmapFactory.decodeFile(mContext.getCacheDir().getAbsolutePath()+"/"+UtilityMethods.CACHE+"/"+path);
 			}
 			catch(Exception e)

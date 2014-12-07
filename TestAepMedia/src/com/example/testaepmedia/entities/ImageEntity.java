@@ -1,9 +1,11 @@
 package com.example.testaepmedia.entities;
 
+///Base entity
 public class ImageEntity {
 
-	private String link;
-	private byte[] imageBytes;
+	
+	private String link; //Url link to image
+	private byte[] imageBytes; //Optionally, not used for storing image byte array
 	
 
 	public String getLink() {

@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
-    <com.example.testaepmedia.ScrollViewWithListener
+<!-- Custom scrollview with availability to monitor scroll changes -->
+    <com.example.testaepmedia.views.ScrollViewWithListener
         android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         >
+        <!-- Two layouts with dynamically added views for simulating listviews in one scroll  -->
         <LinearLayout
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
@@ -33,7 +34,8 @@
                 android:orientation="vertical"
                 ></LinearLayout>
         </LinearLayout>
-    </com.example.testaepmedia.ScrollViewWithListener>
+    </com.example.testaepmedia.views.ScrollViewWithListener>
+    <!-- Reset button set on bottom of screen -->
     <LinearLayout
         android:id="@+id/buttonLayout"
         android:layout_width="match_parent"

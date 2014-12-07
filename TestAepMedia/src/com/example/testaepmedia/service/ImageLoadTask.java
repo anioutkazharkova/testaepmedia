@@ -1,6 +1,5 @@
 package com.example.testaepmedia.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -10,7 +9,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -18,19 +16,21 @@ import android.widget.ImageView;
 
 import com.example.testaepmedia.database.DatabaseHelper;
 
+//Task class to process image loading via url
 public class ImageLoadTask extends AsyncTask<String, Integer, Bitmap> {
 
-	private ImageView image;
-	private String link;
+	private ImageView image; //imageview to set received bitmap
+	private String link;	//url link		
 	private Context mContext;
-	private DatabaseHelper dbHelper;
-	private int index=-1;
+	private DatabaseHelper dbHelper; 	
+	private int index=-1; //index of created row
 	
  public ImageLoadTask() {
-		// TODO Auto-generated constructor stub
+		
 	
 	}
  
+
  public ImageLoadTask(ImageView view,Context context)
  {
 	 this.image=view;
@@ -39,37 +39,36 @@ public class ImageLoadTask extends AsyncTask<String, Integer, Bitmap> {
  }
 	@Override
 	protected Bitmap doInBackground(String... params) {
-		// TODO Auto-generated method stub
+		
 		if (params!=null && params.length>0)
 		{
 			link=params[0];
 			index=Integer.parseInt(params[1]);
 			try {
+				//Downloading image via url
 				return downloadUrl(link);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}
 		return null;
 	}
-	@Override
-	protected void onPreExecute() {
-		// TODO Auto-generated method stub
-		super.onPreExecute();
-		
-	}
+	
 	
 	@Override
 	protected void onPostExecute(Bitmap result) {
-		// TODO Auto-generated method stub
+		
 		if (image!=null)
 		{
 			if (result!=null)
 			{
 				try{
+				//Setting received bitmap to imageview
 				image.setImageBitmap(result);
+				//Saving image to file and getting file path
 				String path=UtilityMethods.saveToFile(mContext, result, index);
+				//Save path to database
 				savePath(path);
 				}
 				catch(OutOfMemoryError er)
@@ -83,6 +82,7 @@ public class ImageLoadTask extends AsyncTask<String, Integer, Bitmap> {
 		}
 	}
 	
+	//Downloading image 
 	 private Bitmap downloadUrl(String strUrl) throws IOException{
 	        Bitmap bitmap=null;
 	        InputStream stream = null;
@@ -96,9 +96,7 @@ public class ImageLoadTask extends AsyncTask<String, Integer, Bitmap> {
 	 
 	            // Reading data from url 
 	            stream = urlConnection.getInputStream();
-	 
-	         
-	        	
+	            
 	            // Creating a bitmap from the stream returned from the url 
 	            bitmap = BitmapFactory.decodeStream(stream);
 	 
@@ -111,13 +109,16 @@ public class ImageLoadTask extends AsyncTask<String, Integer, Bitmap> {
 	        return bitmap;
 	    }
 	 
+	 //Saving image file path to database
 	 private void savePath(String path)
 	 {		 
-     	
+     	//Opening database for writing
 			SQLiteDatabase db=dbHelper.getWritableDatabase();
+			//The row will be inserted in transaction
 			db.beginTransaction();
 			try
 			{
+			//Inserting new row (id, path) to base 
 			ContentValues cv=new ContentValues();
 			cv.put("id", index);
 			cv.put("url", path);
